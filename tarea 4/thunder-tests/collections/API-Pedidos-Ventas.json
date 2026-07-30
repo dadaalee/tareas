@@ -1,0 +1,166 @@
+{
+  "clientName": "Thunder Client",
+  "collectionName": "API Pedidos y Ventas",
+  "collectionId": "c90ddfea-27d1-4ed2-9202-d828c53fcf01",
+  "dateExported": "2026-07-27T03:00:00.000Z",
+  "version": "1.2",
+  "folders": [
+    {
+      "_id": "730913de-454e-44fd-a1ba-dab3f2bcfc01",
+      "name": "Flujo principal",
+      "containerId": "",
+      "created": "2026-07-27T03:00:00.000Z",
+      "sortNum": 10000
+    },
+    {
+      "_id": "ae8cabfb-ddce-45b3-bc07-e4ed9b90fc02",
+      "name": "Validaciones",
+      "containerId": "",
+      "created": "2026-07-27T03:00:00.000Z",
+      "sortNum": 20000
+    }
+  ],
+  "requests": [
+    {
+      "_id": "f6c42ed6-36ea-41e5-82df-344529f80101",
+      "colId": "c90ddfea-27d1-4ed2-9202-d828c53fcf01",
+      "containerId": "730913de-454e-44fd-a1ba-dab3f2bcfc01",
+      "name": "1. Estado del servidor",
+      "url": "{{baseUrl}}/",
+      "method": "GET",
+      "sortNum": 10000,
+      "created": "2026-07-27T03:00:00.000Z",
+      "modified": "2026-07-27T03:00:00.000Z",
+      "headers": [],
+      "tests": [
+        { "type": "res-code", "custom": "", "action": "equal", "value": "200" },
+        { "type": "json-query", "custom": "json.estado", "action": "equal", "value": "activo" },
+        { "type": "json-query", "custom": "json.base_de_datos", "action": "equal", "value": "SQLite" }
+      ]
+    },
+    {
+      "_id": "082e423e-b1dd-413f-8de3-5b3e72a80102",
+      "colId": "c90ddfea-27d1-4ed2-9202-d828c53fcf01",
+      "containerId": "730913de-454e-44fd-a1ba-dab3f2bcfc01",
+      "name": "2. Listar clientes",
+      "url": "{{baseUrl}}/api/clientes",
+      "method": "GET",
+      "sortNum": 20000,
+      "created": "2026-07-27T03:00:00.000Z",
+      "modified": "2026-07-27T03:00:00.000Z",
+      "headers": [],
+      "tests": [
+        { "type": "res-code", "custom": "", "action": "equal", "value": "200" }
+      ]
+    },
+    {
+      "_id": "2a13024d-f670-4fdc-a99a-859b2e550103",
+      "colId": "c90ddfea-27d1-4ed2-9202-d828c53fcf01",
+      "containerId": "730913de-454e-44fd-a1ba-dab3f2bcfc01",
+      "name": "3. Listar productos",
+      "url": "{{baseUrl}}/api/productos",
+      "method": "GET",
+      "sortNum": 30000,
+      "created": "2026-07-27T03:00:00.000Z",
+      "modified": "2026-07-27T03:00:00.000Z",
+      "headers": [],
+      "tests": [
+        { "type": "res-code", "custom": "", "action": "equal", "value": "200" }
+      ]
+    },
+    {
+      "_id": "bc13f671-fe5a-4295-85a3-c7c4cb740104",
+      "colId": "c90ddfea-27d1-4ed2-9202-d828c53fcf01",
+      "containerId": "730913de-454e-44fd-a1ba-dab3f2bcfc01",
+      "name": "4. Crear pedido válido",
+      "url": "{{baseUrl}}/api/pedidos",
+      "method": "POST",
+      "sortNum": 40000,
+      "created": "2026-07-27T03:00:00.000Z",
+      "modified": "2026-07-27T03:00:00.000Z",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"id_cliente\": 1,\n  \"id_producto\": 1,\n  \"cantidad\": 3\n}",
+        "form": []
+      },
+      "tests": [
+        { "type": "res-code", "custom": "", "action": "equal", "value": "201" },
+        { "type": "json-query", "custom": "json.estado", "action": "equal", "value": "pendiente" },
+        { "type": "json-query", "custom": "json.cantidad", "action": "equal", "value": "3" }
+      ]
+    },
+    {
+      "_id": "ad5484bc-8d24-4d38-a8e6-89f3ba430105",
+      "colId": "c90ddfea-27d1-4ed2-9202-d828c53fcf01",
+      "containerId": "730913de-454e-44fd-a1ba-dab3f2bcfc01",
+      "name": "5. Registrar venta con descuento",
+      "url": "{{baseUrl}}/api/ventas",
+      "method": "POST",
+      "sortNum": 50000,
+      "created": "2026-07-27T03:00:00.000Z",
+      "modified": "2026-07-27T03:00:00.000Z",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"id_pedido\": 1,\n  \"descuento\": 10\n}",
+        "form": []
+      },
+      "tests": [
+        { "type": "res-code", "custom": "", "action": "equal", "value": "201" },
+        { "type": "json-query", "custom": "json.total", "action": "equal", "value": "486" },
+        { "type": "json-query", "custom": "json.descuento", "action": "equal", "value": "10" }
+      ]
+    },
+    {
+      "_id": "94290928-727b-446b-8737-929401af0106",
+      "colId": "c90ddfea-27d1-4ed2-9202-d828c53fcf01",
+      "containerId": "ae8cabfb-ddce-45b3-bc07-e4ed9b90fc02",
+      "name": "6. Rechazar stock insuficiente",
+      "url": "{{baseUrl}}/api/pedidos",
+      "method": "POST",
+      "sortNum": 60000,
+      "created": "2026-07-27T03:00:00.000Z",
+      "modified": "2026-07-27T03:00:00.000Z",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"id_cliente\": 1,\n  \"id_producto\": 2,\n  \"cantidad\": 999\n}",
+        "form": []
+      },
+      "tests": [
+        { "type": "res-code", "custom": "", "action": "equal", "value": "409" },
+        { "type": "json-query", "custom": "json.error", "action": "equal", "value": "Stock insuficiente" }
+      ]
+    },
+    {
+      "_id": "5be64f32-a6cf-4391-954c-6b40a7570107",
+      "colId": "c90ddfea-27d1-4ed2-9202-d828c53fcf01",
+      "containerId": "ae8cabfb-ddce-45b3-bc07-e4ed9b90fc02",
+      "name": "7. Rechazar venta duplicada",
+      "url": "{{baseUrl}}/api/ventas",
+      "method": "POST",
+      "sortNum": 70000,
+      "created": "2026-07-27T03:00:00.000Z",
+      "modified": "2026-07-27T03:00:00.000Z",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"id_pedido\": 1,\n  \"descuento\": 10\n}",
+        "form": []
+      },
+      "tests": [
+        { "type": "res-code", "custom": "", "action": "equal", "value": "409" },
+        { "type": "json-query", "custom": "json.error", "action": "equal", "value": "El pedido ya tiene una venta registrada" }
+      ]
+    }
+  ]
+}

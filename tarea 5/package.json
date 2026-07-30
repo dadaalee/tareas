@@ -1,0 +1,24 @@
+{
+  "name": "tarea-5-sequelize",
+  "version": "1.0.0",
+  "description": "API REST de ventas con Node.js, Express, Sequelize ORM y SQLite",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "seed": "node scripts/seed.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.2.1",
+    "sequelize": "^6.37.8",
+    "sqlite3": "^6.0.1"
+  },
+  "overrides": {
+    "uuid": "^11.1.1"
+  }
+}

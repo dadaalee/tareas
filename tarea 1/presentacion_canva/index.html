@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tarea 1 - Flask y Jinja2</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            background: #07111f;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #eff8ff;
+        }
+        .slide {
+            position: relative;
+            width: 1280px;
+            height: 720px;
+            overflow: hidden;
+            padding: 64px 76px;
+            background:
+                radial-gradient(circle at 90% 10%, rgba(0, 210, 255, .22), transparent 30%),
+                linear-gradient(135deg, #081423 0%, #102b46 100%);
+        }
+        .slide.light {
+            color: #102438;
+            background:
+                radial-gradient(circle at 92% 5%, rgba(0, 183, 219, .18), transparent 28%),
+                linear-gradient(135deg, #f7fbfe 0%, #e9f5fa 100%);
+        }
+        .kicker {
+            margin: 0 0 14px;
+            color: #18d7f2;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+        .light .kicker { color: #007b9f; }
+        h1 {
+            max-width: 960px;
+            margin: 0;
+            font-size: 64px;
+            line-height: 1.05;
+            letter-spacing: -2px;
+        }
+        h2 {
+            margin: 0 0 28px;
+            font-size: 42px;
+            line-height: 1.1;
+            letter-spacing: -1px;
+        }
+        h3 {
+            margin: 0 0 12px;
+            font-size: 24px;
+        }
+        p {
+            margin: 0;
+            font-size: 22px;
+            line-height: 1.45;
+        }
+        .subtitle {
+            max-width: 760px;
+            margin-top: 24px;
+            color: #b8d5e6;
+            font-size: 28px;
+        }
+        .accent { color: #18d7f2; }
+        .badge {
+            display: inline-block;
+            margin-top: 42px;
+            padding: 12px 20px;
+            border: 1px solid rgba(24, 215, 242, .65);
+            border-radius: 999px;
+            color: #bdf7ff;
+            background: rgba(24, 215, 242, .10);
+            font-size: 18px;
+        }
+        .big-number {
+            position: absolute;
+            right: 76px;
+            bottom: 36px;
+            color: rgba(24, 215, 242, .20);
+            font-size: 190px;
+            font-weight: 800;
+            line-height: 1;
+        }
+        .footer {
+            position: absolute;
+            left: 76px;
+            bottom: 34px;
+            color: #7997aa;
+            font-size: 15px;
+            letter-spacing: 1px;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+        .card {
+            min-height: 175px;
+            padding: 26px;
+            border: 1px solid rgba(130, 188, 219, .28);
+            border-radius: 18px;
+            background: rgba(255, 255, 255, .06);
+        }
+        .light .card {
+            border-color: #c7e0eb;
+            background: rgba(255, 255, 255, .82);
+            box-shadow: 0 10px 25px rgba(19, 66, 91, .08);
+        }
+        .card p {
+            color: #bfd6e4;
+            font-size: 19px;
+        }
+        .light .card p { color: #4f6878; }
+        .route {
+            color: #18d7f2;
+            font-family: Consolas, monospace;
+            font-size: 27px;
+            font-weight: 700;
+        }
+        .code {
+            margin-top: 24px;
+            padding: 26px 30px;
+            border-left: 6px solid #18d7f2;
+            border-radius: 12px;
+            color: #dffaff;
+            background: #07111f;
+            font-family: Consolas, monospace;
+            font-size: 24px;
+            line-height: 1.55;
+        }
+        .wrong {
+            color: #ff7788;
+            text-decoration: line-through;
+        }
+        .correct { color: #4ce5a5; }
+        .arrow {
+            margin: 14px 0;
+            color: #007b9f;
+            font-size: 28px;
+            font-weight: 700;
+        }
+        .flow {
+            display: grid;
+            grid-template-columns: 1fr 82px 1fr 82px 1fr;
+            align-items: center;
+            margin-top: 42px;
+        }
+        .flow-box {
+            min-height: 220px;
+            padding: 26px 20px;
+            border: 1px solid #bcdce9;
+            border-radius: 18px;
+            background: #ffffff;
+            text-align: center;
+            box-shadow: 0 12px 26px rgba(23, 69, 92, .09);
+        }
+        .flow-box .file {
+            display: block;
+            margin-bottom: 18px;
+            color: #007b9f;
+            font-family: Consolas, monospace;
+            font-size: 22px;
+            font-weight: 700;
+        }
+        .flow-box p {
+            color: #516c7c;
+            font-size: 18px;
+        }
+        .connector {
+            color: #00aeca;
+            font-size: 40px;
+            font-weight: 700;
+            text-align: center;
+        }
+        .screens {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-top: 16px;
+        }
+        .screen-card {
+            padding: 14px;
+            border: 1px solid #c3dde8;
+            border-radius: 16px;
+            background: #ffffff;
+            box-shadow: 0 12px 26px rgba(23, 69, 92, .11);
+        }
+        .screen-card img {
+            display: block;
+            width: 100%;
+            height: 330px;
+            border-radius: 9px;
+            object-fit: cover;
+            object-position: top left;
+        }
+        .screen-label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 13px 5px 3px;
+            color: #17364a;
+            font-size: 18px;
+            font-weight: 700;
+        }
+        .status {
+            padding: 5px 9px;
+            border-radius: 99px;
+            color: #087b52;
+            background: #dff8ed;
+            font-size: 14px;
+        }
+        .result {
+            margin-top: 20px;
+            color: #3f6173;
+            font-size: 18px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <section class="slide" data-document-role="page" data-label="Portada" data-speaker-notes="Presentar la Tarea 1 y explicar que se trabajó con Flask y Jinja2 para construir un gestor de tareas sencillo.">
+        <p class="kicker">Tecnología Web · Módulo 2</p>
+        <h1>Tarea 1: <span class="accent">Flask</span> y plantillas Jinja2</h1>
+        <p class="subtitle">Gestor de tareas con rutas, variables dinámicas y herencia de plantillas.</p>
+        <span class="badge">Backend en Python · Renderizado del lado del servidor</span>
+        <div class="big-number">01</div>
+        <div class="footer">TAREA 1 · FLASK + JINJA2 · 2026</div>
+    </section>
+
+    <section class="slide light" data-document-role="page" data-label="Objetivo y estructura" data-speaker-notes="Explicar que app.py controla las rutas y envía los datos, mientras que templates contiene las vistas renderizadas por Jinja2.">
+        <p class="kicker">Arquitectura</p>
+        <h2>Objetivo y estructura del proyecto</h2>
+        <div class="grid-2">
+            <div class="card">
+                <h3>Controlador</h3>
+                <p><span class="route">app.py</span><br>Define las rutas, prepara la lista de tareas y renderiza las plantillas.</p>
+            </div>
+            <div class="card">
+                <h3>Plantilla base</h3>
+                <p><span class="route">base.html</span><br>Centraliza navegación, título, contenido principal y pie de página.</p>
+            </div>
+            <div class="card">
+                <h3>Página de inicio</h3>
+                <p><span class="route">index.html</span><br>Muestra dinámicamente las tareas recibidas desde Flask.</p>
+            </div>
+            <div class="card">
+                <h3>Nueva vista</h3>
+                <p><span class="route">acerca.html</span><br>Describe el proyecto mediante la ruta <strong>/acerca</strong>.</p>
+            </div>
+        </div>
+        <div class="footer">ESTRUCTURA MODULAR Y REUTILIZABLE</div>
+    </section>
+
+    <section class="slide" data-document-role="page" data-label="Corrección de la variable" data-speaker-notes="La causa de la lista vacía era la diferencia entre Tareas y tareas. Python y Jinja2 distinguen mayúsculas de minúsculas.">
+        <p class="kicker">Corrección principal</p>
+        <h2>Una letra cambia el resultado</h2>
+        <p>Python y Jinja2 son sensibles a mayúsculas y minúsculas.</p>
+        <div class="code">
+            app.py&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;render_template("index.html", <span class="correct">tareas</span>=lista_tareas)<br><br>
+            index.html&nbsp;&nbsp;<span class="wrong">{% for tarea in Tareas %}</span><br>
+            index.html&nbsp;&nbsp;<span class="correct">{% for tarea in tareas %}</span>
+        </div>
+        <p class="arrow">Resultado → la lista de pendientes se renderiza correctamente.</p>
+        <div class="big-number">02</div>
+        <div class="footer">MISMO NOMBRE · MISMA CAPITALIZACIÓN</div>
+    </section>
+
+    <section class="slide light" data-document-role="page" data-label="Herencia de plantillas" data-speaker-notes="Mostrar cómo base.html evita repetir la estructura común. Las páginas hijas heredan y completan los bloques titulo y contenido.">
+        <p class="kicker">Jinja2</p>
+        <h2>Herencia de plantillas</h2>
+        <p>Una estructura común, múltiples páginas con contenido propio.</p>
+        <div class="flow">
+            <div class="flow-box">
+                <span class="file">base.html</span>
+                <p>Navegación<br>bloque título<br>bloque contenido<br>pie de página</p>
+            </div>
+            <div class="connector">→</div>
+            <div class="flow-box">
+                <span class="file">index.html</span>
+                <p>Hereda la base<br>muestra el gestor<br>recorre <strong>tareas</strong></p>
+            </div>
+            <div class="connector">+</div>
+            <div class="flow-box">
+                <span class="file">acerca.html</span>
+                <p>Hereda la base<br>define “Acerca de”<br>describe el proyecto</p>
+            </div>
+        </div>
+        <div class="footer">{% extends 'base.html' %} · {% block contenido %}</div>
+    </section>
+
+    <section class="slide light" data-document-role="page" data-label="Resultado y evidencias" data-speaker-notes="Cerrar mostrando las capturas reales. Ambas rutas fueron probadas y devolvieron HTTP 200.">
+        <p class="kicker">Resultado final</p>
+        <h2>Dos rutas funcionando correctamente</h2>
+        <div class="screens">
+            <div class="screen-card">
+                <img src="capturas/inicio.png" alt="Captura de la página de inicio">
+                <div class="screen-label">
+                    <span>Inicio · /</span>
+                    <span class="status">200 OK</span>
+                </div>
+            </div>
+            <div class="screen-card">
+                <img src="capturas/acerca.png" alt="Captura de la página Acerca de">
+                <div class="screen-label">
+                    <span>Acerca de · /acerca</span>
+                    <span class="status">200 OK</span>
+                </div>
+            </div>
+        </div>
+        <p class="result">Aprendizaje: conexión entre Flask y Jinja2, uso de variables y reutilización mediante herencia.</p>
+    </section>
+</body>
+</html>

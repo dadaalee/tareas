@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tarea 2 - Persistencia con Flask-SQLAlchemy</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            background: #07111f;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #eff8ff;
+        }
+        .slide {
+            position: relative;
+            width: 1280px;
+            height: 720px;
+            overflow: hidden;
+            padding: 64px 76px;
+            background:
+                radial-gradient(circle at 90% 10%, rgba(0, 210, 255, .22), transparent 30%),
+                linear-gradient(135deg, #081423 0%, #102b46 100%);
+        }
+        .slide.light {
+            color: #102438;
+            background:
+                radial-gradient(circle at 92% 5%, rgba(0, 183, 219, .18), transparent 28%),
+                linear-gradient(135deg, #f7fbfe 0%, #e9f5fa 100%);
+        }
+        .kicker {
+            margin: 0 0 14px;
+            color: #18d7f2;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+        .light .kicker { color: #007b9f; }
+        h1 {
+            max-width: 960px;
+            margin: 0;
+            font-size: 64px;
+            line-height: 1.05;
+            letter-spacing: -2px;
+        }
+        h2 {
+            margin: 0 0 28px;
+            font-size: 42px;
+            line-height: 1.1;
+            letter-spacing: -1px;
+        }
+        h3 {
+            margin: 0 0 12px;
+            font-size: 24px;
+        }
+        p {
+            margin: 0;
+            font-size: 22px;
+            line-height: 1.45;
+        }
+        .subtitle {
+            max-width: 760px;
+            margin-top: 24px;
+            color: #b8d5e6;
+            font-size: 28px;
+        }
+        .accent { color: #18d7f2; }
+        .badge {
+            display: inline-block;
+            margin-top: 42px;
+            padding: 12px 20px;
+            border: 1px solid rgba(24, 215, 242, .65);
+            border-radius: 999px;
+            color: #bdf7ff;
+            background: rgba(24, 215, 242, .10);
+            font-size: 18px;
+        }
+        .big-number {
+            position: absolute;
+            right: 76px;
+            bottom: 36px;
+            color: rgba(24, 215, 242, .20);
+            font-size: 190px;
+            font-weight: 800;
+            line-height: 1;
+        }
+        .footer {
+            position: absolute;
+            left: 76px;
+            bottom: 34px;
+            color: #7997aa;
+            font-size: 15px;
+            letter-spacing: 1px;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+        .card {
+            min-height: 175px;
+            padding: 26px;
+            border: 1px solid rgba(130, 188, 219, .28);
+            border-radius: 18px;
+            background: rgba(255, 255, 255, .06);
+        }
+        .light .card {
+            border-color: #c7e0eb;
+            background: rgba(255, 255, 255, .82);
+            box-shadow: 0 10px 25px rgba(19, 66, 91, .08);
+        }
+        .card p {
+            color: #bfd6e4;
+            font-size: 19px;
+        }
+        .light .card p { color: #4f6878; }
+        .route {
+            color: #18d7f2;
+            font-family: Consolas, monospace;
+            font-size: 27px;
+            font-weight: 700;
+        }
+        .code {
+            margin-top: 24px;
+            padding: 26px 30px;
+            border-left: 6px solid #18d7f2;
+            border-radius: 12px;
+            color: #dffaff;
+            background: #07111f;
+            font-family: Consolas, monospace;
+            font-size: 24px;
+            line-height: 1.55;
+        }
+        .wrong {
+            color: #ff7788;
+            text-decoration: line-through;
+        }
+        .correct { color: #4ce5a5; }
+        .arrow {
+            margin: 14px 0;
+            color: #007b9f;
+            font-size: 28px;
+            font-weight: 700;
+        }
+        .flow {
+            display: grid;
+            grid-template-columns: 1fr 82px 1fr 82px 1fr;
+            align-items: center;
+            margin-top: 42px;
+        }
+        .flow-box {
+            min-height: 220px;
+            padding: 26px 20px;
+            border: 1px solid #bcdce9;
+            border-radius: 18px;
+            background: #ffffff;
+            text-align: center;
+            box-shadow: 0 12px 26px rgba(23, 69, 92, .09);
+        }
+        .flow-box .file {
+            display: block;
+            margin-bottom: 18px;
+            color: #007b9f;
+            font-family: Consolas, monospace;
+            font-size: 22px;
+            font-weight: 700;
+        }
+        .flow-box p {
+            color: #516c7c;
+            font-size: 18px;
+        }
+        .connector {
+            color: #00aeca;
+            font-size: 40px;
+            font-weight: 700;
+            text-align: center;
+        }
+        .screens {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-top: 16px;
+        }
+        .screen-card {
+            padding: 14px;
+            border: 1px solid #c3dde8;
+            border-radius: 16px;
+            background: #ffffff;
+            box-shadow: 0 12px 26px rgba(23, 69, 92, .11);
+        }
+        .screen-card img {
+            display: block;
+            width: 100%;
+            height: 330px;
+            border-radius: 9px;
+            object-fit: cover;
+            object-position: top left;
+        }
+        .screen-label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 13px 5px 3px;
+            color: #17364a;
+            font-size: 18px;
+            font-weight: 700;
+        }
+        .status {
+            padding: 5px 9px;
+            border-radius: 99px;
+            color: #087b52;
+            background: #dff8ed;
+            font-size: 14px;
+        }
+        .result {
+            margin-top: 20px;
+            color: #3f6173;
+            font-size: 18px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <section class="slide" data-document-role="page" data-label="Portada" data-speaker-notes="Presentar la Tarea 2 y explicar que ahora las tareas se almacenan de forma permanente en SQLite mediante Flask-SQLAlchemy.">
+        <p class="kicker">Tecnología Web · Módulo 3</p>
+        <h1>Tarea 2: Persistencia con <span class="accent">Flask-SQLAlchemy</span></h1>
+        <p class="subtitle">Gestor de tareas conectado a una base de datos SQLite.</p>
+        <span class="badge">ORM en Python · Datos persistentes · SQLite</span>
+        <div class="big-number">02</div>
+        <div class="footer">TAREA 2 · FLASK-SQLALCHEMY · 2026</div>
+    </section>
+
+    <section class="slide light" data-document-role="page" data-label="Problema y solución" data-speaker-notes="Comparar los datos temporales en memoria con la persistencia que ofrece SQLite. El ORM permite trabajar con clases de Python en lugar de escribir SQL manual.">
+        <p class="kicker">Persistencia</p>
+        <h2>Del almacenamiento temporal a la base de datos</h2>
+        <div class="grid-2">
+            <div class="card">
+                <h3>Antes: memoria</h3>
+                <p>Las tareas estaban en una lista de Python y desaparecían al reiniciar el servidor.</p>
+            </div>
+            <div class="card">
+                <h3>Ahora: SQLite</h3>
+                <p>Los registros quedan guardados en <span class="route">instance/tareas.db</span>.</p>
+            </div>
+            <div class="card">
+                <h3>Flask-SQLAlchemy</h3>
+                <p>Integra SQLAlchemy con Flask y administra sesiones, modelos y consultas.</p>
+            </div>
+            <div class="card">
+                <h3>ORM</h3>
+                <p>Representa una tabla como una clase y cada fila como un objeto de Python.</p>
+            </div>
+        </div>
+        <div class="footer">DATOS DISPONIBLES DESPUÉS DE REINICIAR</div>
+    </section>
+
+    <section class="slide" data-document-role="page" data-label="Configuración y modelo" data-speaker-notes="Explicar la URI de SQLite, la inicialización de SQLAlchemy y los tres campos del modelo Tarea. db.create_all crea la tabla si todavía no existe.">
+        <p class="kicker">Configuración</p>
+        <h2>Modelo de datos <span class="accent">Tarea</span></h2>
+        <div class="code">
+            app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///tareas.db"<br>
+            db = SQLAlchemy(app)<br><br>
+            class <span class="correct">Tarea</span>(db.Model):<br>
+            &nbsp;&nbsp;id = db.Column(db.Integer, primary_key=True)<br>
+            &nbsp;&nbsp;titulo = db.Column(db.String(200), nullable=False)<br>
+            &nbsp;&nbsp;completa = db.Column(db.Boolean, default=False)
+        </div>
+        <p class="arrow">db.create_all() → crea automáticamente la tabla si no existe.</p>
+        <div class="big-number">DB</div>
+        <div class="footer">CLASE PYTHON → TABLA RELACIONAL</div>
+    </section>
+
+    <section class="slide light" data-document-role="page" data-label="Flujo de persistencia" data-speaker-notes="Describir el ciclo completo: crear el objeto, añadirlo a la sesión, confirmar la transacción, consultarlo y mostrar su propiedad titulo en la plantilla.">
+        <p class="kicker">Circuito completo</p>
+        <h2>Guardar, consultar y mostrar</h2>
+        <p>La sesión confirma la operación y Jinja2 recibe objetos del modelo.</p>
+        <div class="flow">
+            <div class="flow-box">
+                <span class="file">INSERTAR</span>
+                <p>Tarea(titulo=...)<br>db.session.add()<br>db.session.commit()</p>
+            </div>
+            <div class="connector">→</div>
+            <div class="flow-box">
+                <span class="file">CONSULTAR</span>
+                <p>Tarea.query.all()<br>devuelve objetos<br>desde SQLite</p>
+            </div>
+            <div class="connector">→</div>
+            <div class="flow-box">
+                <span class="file">RENDERIZAR</span>
+                <p>for tarea in tareas<br>mostrar<br><strong>tarea.titulo</strong></p>
+            </div>
+        </div>
+        <div class="footer">TRANSACCIÓN CONFIRMADA · INFORMACIÓN PERSISTENTE</div>
+    </section>
+
+    <section class="slide light" data-document-role="page" data-label="Resultado y evidencias" data-speaker-notes="Cerrar mostrando las capturas reales. La tarea proviene de SQLite, está almacenada en instance/tareas.db y ambas rutas respondieron HTTP 200.">
+        <p class="kicker">Resultado final</p>
+        <h2>Persistencia comprobada en ejecución</h2>
+        <div class="screens">
+            <div class="screen-card">
+                <img src="capturas/inicio.png" alt="Captura de la página de inicio">
+                <div class="screen-label">
+                    <span>Inicio · dato desde SQLite</span>
+                    <span class="status">200 OK</span>
+                </div>
+            </div>
+            <div class="screen-card">
+                <img src="capturas/acerca.png" alt="Captura de la página Acerca de">
+                <div class="screen-label">
+                    <span>Acerca de · /acerca</span>
+                    <span class="status">200 OK</span>
+                </div>
+            </div>
+        </div>
+        <p class="result">“Mi primera tarea en Base de Datos” permanece guardada en instance/tareas.db.</p>
+    </section>
+</body>
+</html>

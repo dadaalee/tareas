@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pruebas - Cine Los Patitos</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            padding: 52px;
+            color: #dffbf2;
+            background: #07131c;
+            font-family: Consolas, "Courier New", monospace;
+        }
+        .terminal {
+            max-width: 1200px;
+            margin: 0 auto;
+            overflow: hidden;
+            border: 1px solid #275164;
+            border-radius: 16px;
+            background: #0b1e29;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, .4);
+        }
+        .bar {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 15px 20px;
+            color: #aac7d3;
+            background: #102c3b;
+            font-family: Arial, sans-serif;
+        }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .red { background: #ff6b6b; }
+        .yellow { background: #ffd166; }
+        .green { background: #52d273; }
+        .title { margin-left: 10px; font-size: 14px; }
+        .content { padding: 34px 40px 40px; font-size: 22px; line-height: 1.55; }
+        .prompt { color: #62e6ff; }
+        .success { color: #63e888; font-weight: 700; }
+        .muted { color: #89a7b5; }
+        .audit {
+            display: inline-block;
+            margin-top: 18px;
+            padding: 10px 16px;
+            border: 1px solid #3c9d70;
+            border-radius: 8px;
+            color: #8ff0ad;
+            background: rgba(82, 210, 115, .08);
+        }
+    </style>
+</head>
+<body>
+    <div class="terminal">
+        <div class="bar">
+            <span class="dot red"></span>
+            <span class="dot yellow"></span>
+            <span class="dot green"></span>
+            <span class="title">Cine Los Patitos — verificación automatizada</span>
+        </div>
+        <div class="content">
+            <div><span class="prompt">PS&gt;</span> npm test</div>
+            <br>
+            <div>&gt; cine-los-patitos-backend@1.0.0 test</div>
+            <div>&gt; node --test</div>
+            <br>
+            <div class="success">✔ CRUD completo del Cine Los Patitos</div>
+            <div class="muted">ℹ tests 1</div>
+            <div class="muted">ℹ suites 0</div>
+            <div class="success">ℹ pass 1</div>
+            <div>ℹ fail 0</div>
+            <div>ℹ cancelled 0</div>
+            <div>ℹ skipped 0</div>
+            <br>
+            <div><span class="prompt">PS&gt;</span> npm audit --audit-level=moderate</div>
+            <div class="audit">found 0 vulnerabilities</div>
+        </div>
+    </div>
+</body>
+</html>

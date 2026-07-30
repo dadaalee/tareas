@@ -1,0 +1,25 @@
+{
+  "name": "cine-los-patitos-backend",
+  "version": "1.0.0",
+  "description": "Backend del Cine Los Patitos con Node.js, Express, Sequelize y SQLite",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "seed": "node scripts/seed.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "express": "^5.2.1",
+    "sequelize": "^6.37.8",
+    "sqlite3": "^6.0.1"
+  },
+  "overrides": {
+    "uuid": "^11.1.1"
+  }
+}

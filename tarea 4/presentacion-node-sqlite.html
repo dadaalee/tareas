@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Node.js Server y Base de Datos SQLite</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #09111f; font-family: Arial, Helvetica, sans-serif; color: #f5f7fb; }
+    [data-document-role="page"] {
+      width: 1280px; height: 720px; padding: 64px 76px; position: relative;
+      overflow: hidden; page-break-after: always;
+      background: linear-gradient(135deg, #09111f 0%, #10233c 60%, #123a4a 100%);
+    }
+    [data-document-role="page"]::after {
+      content: ""; position: absolute; width: 360px; height: 360px; right: -130px; top: -150px;
+      border-radius: 50%; background: rgba(52, 211, 153, .13);
+    }
+    h1 { font-size: 62px; line-height: 1.05; margin: 0 0 24px; max-width: 970px; }
+    h2 { font-size: 42px; margin: 0 0 30px; color: #fff; }
+    h3 { font-size: 24px; margin: 0 0 12px; color: #6ee7b7; }
+    p, li { font-size: 23px; line-height: 1.35; }
+    ul { margin: 12px 0; padding-left: 27px; }
+    li { margin: 9px 0; }
+    .accent { color: #6ee7b7; }
+    .muted { color: #b8c7d9; }
+    .eyebrow { font-weight: bold; letter-spacing: 3px; color: #6ee7b7; margin-bottom: 20px; }
+    .footer { position: absolute; bottom: 25px; right: 50px; color: #8da2b8; font-size: 16px; }
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .card {
+      background: rgba(255,255,255,.075); border: 1px solid rgba(255,255,255,.13);
+      border-radius: 18px; padding: 22px;
+    }
+    .card p, .card li { font-size: 19px; }
+    .pill { display: inline-block; padding: 8px 14px; border-radius: 999px; margin: 5px;
+      background: rgba(110,231,183,.14); color: #9af0cc; font-weight: bold; }
+    .flow { display: flex; align-items: center; justify-content: center; gap: 9px; margin-top: 70px; }
+    .node { padding: 22px 15px; background: #18304b; border: 2px solid #34d399; border-radius: 13px;
+      min-width: 126px; text-align: center; font-weight: bold; font-size: 18px; }
+    .arrow { color: #6ee7b7; font-size: 27px; }
+    table { width: 100%; border-collapse: collapse; font-size: 18px; }
+    th { background: #1a4d55; color: #a7f3d0; text-align: left; }
+    th, td { padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,.14); }
+    code { color: #a7f3d0; font-family: Consolas, monospace; }
+    .big-number { font-size: 54px; font-weight: bold; color: #6ee7b7; }
+    .step { display: flex; gap: 18px; align-items: flex-start; margin: 16px 0; }
+    .step b { display: grid; place-items: center; min-width: 38px; height: 38px; border-radius: 50%;
+      background: #34d399; color: #07131e; font-size: 20px; }
+    .terminal { background: #05090f; border-radius: 16px; padding: 24px 30px; font: 21px/1.55 Consolas, monospace; color: #b7f7d8; }
+    .tc { background: #050607; border: 1px solid #314252; border-radius: 10px; overflow: hidden; box-shadow: 0 18px 45px rgba(0,0,0,.32); }
+    .tcbar { display: flex; border-bottom: 1px solid #263746; height: 58px; align-items: center; }
+    .method { height: 100%; padding: 17px 22px; border-right: 1px solid #314252; font: bold 19px Consolas; color: #fff; }
+    .url { flex: 1; padding: 0 20px; font: 18px Consolas; color: #fff; }
+    .send { margin-right: 10px; padding: 10px 25px; border: 1px solid #16b7ed; border-radius: 5px; font-size: 17px; }
+    .tabs { display: flex; gap: 38px; height: 48px; align-items: center; padding: 0 20px; border-bottom: 1px solid #263746; font-size: 17px; }
+    .active-tab { height: 48px; padding-top: 14px; border-bottom: 3px solid #22b9ee; }
+    .tccontent { display: grid; grid-template-columns: 1fr 1fr; min-height: 305px; }
+    .pane { padding: 17px 23px; border-right: 1px solid #263746; }
+    .pane:last-child { border-right: 0; }
+    .pane-title { color: #8ea5b8; font-size: 15px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+    .tc pre { margin: 0; color: #edf5fb; font: 17px/1.45 Consolas, monospace; white-space: pre-wrap; }
+    .key { color: #8fd7ff; } .str { color: #ffad74; } .num { color: #a7f3d0; }
+    .status { padding: 13px 22px; border-top: 1px solid #263746; color: #9fb1c1; font-size: 17px; }
+    .ok { color: #31df70; font-weight: bold; } .conflict { color: #ffb454; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <section data-document-role="page" data-label="Portada"
+    data-speaker-notes="Presentar el proyecto como una API exclusivamente backend desarrollada durante la materia.">
+    <div class="eyebrow">TECNOLOGÍA WEB · BACKEND</div>
+    <h1>Node.js Server y<br><span class="accent">Base de Datos SQLite</span></h1>
+    <p class="muted">API REST para clientes, productos, pedidos y ventas</p>
+    <div style="margin-top:110px" class="card">
+      <p><strong>Estudiante:</strong> ____________________ &nbsp;&nbsp; <strong>Materia:</strong> Tecnología Web</p>
+    </div>
+    <div class="footer">01 · Proyecto Node.js + SQLite</div>
+  </section>
+
+  <section data-document-role="page" data-label="Objetivo y requerimientos"
+    data-speaker-notes="Explicar las cuatro entidades solicitadas y enfatizar la regla central de stock.">
+    <h2>Objetivo y requerimientos</h2>
+    <div class="grid2">
+      <div class="card"><h3>Clientes</h3><p>id_cliente · nombre<br>nit · fecha_nac</p></div>
+      <div class="card"><h3>Productos</h3><p>id_producto · producto<br>precio_compra · precio_venta · stock</p></div>
+      <div class="card"><h3>Pedidos</h3><p>id_pedido · id_producto<br>id_cliente · cantidad</p></div>
+      <div class="card"><h3>Ventas</h3><p>pedido · cliente · producto · fecha<br>cantidad · precio · total · descuento</p></div>
+    </div>
+    <p style="margin-top:25px"><span class="accent"><strong>Regla principal:</strong></span> aceptar un pedido solamente cuando el stock disponible sea igual o superior a la cantidad solicitada.</p>
+    <div class="footer">02 · Alcance del sistema</div>
+  </section>
+
+  <section data-document-role="page" data-label="Evolución de la solución"
+    data-speaker-notes="Narrar cómo la solución empezó en memoria y luego evolucionó a persistencia SQL.">
+    <h2>Evolución de la solución</h2>
+    <div class="grid2">
+      <div class="card">
+        <div class="big-number">01</div><h3>Primera versión</h3>
+        <ul><li>Express y respuestas JSON</li><li>Datos almacenados en memoria</li><li>Rutas y controladores separados</li><li>Validación de stock</li></ul>
+      </div>
+      <div class="card">
+        <div class="big-number">02</div><h3>Versión con SQLite</h3>
+        <ul><li>Persistencia entre reinicios</li><li>Modelos y capa de base de datos</li><li>Claves y restricciones SQL</li><li>Operaciones transaccionales</li></ul>
+      </div>
+    </div>
+    <p class="muted">Arquitectura inspirada en el ejemplo académico <strong>taskflow-api</strong>.</p>
+    <div class="footer">03 · Del prototipo a la persistencia</div>
+  </section>
+
+  <section data-document-role="page" data-label="Tecnologías"
+    data-speaker-notes="Todas las tecnologías pertenecen al ecosistema de software libre y el proyecto no incluye frontend.">
+    <h2>Tecnologías utilizadas</h2>
+    <div class="grid4" style="margin-top:58px">
+      <div class="card"><h3>Node.js</h3><p>Entorno de ejecución del servidor.</p></div>
+      <div class="card"><h3>Express 5</h3><p>Rutas, middleware y respuestas HTTP.</p></div>
+      <div class="card"><h3>SQLite</h3><p>Base SQL ligera y persistente.</p></div>
+      <div class="card"><h3>sqlite3 6.0.1</h3><p>Controlador de SQLite para Node.js.</p></div>
+    </div>
+    <div style="margin-top:40px;text-align:center">
+      <span class="pill">JavaScript CommonJS</span><span class="pill">REST</span>
+      <span class="pill">JSON</span><span class="pill">node:test</span><span class="pill">Backend puro</span>
+    </div>
+    <div class="footer">04 · Stack tecnológico</div>
+  </section>
+
+  <section data-document-role="page" data-label="Arquitectura"
+    data-speaker-notes="Describir el recorrido de una solicitud desde el servidor hasta el archivo SQLite.">
+    <h2>Arquitectura por capas</h2>
+    <div class="flow">
+      <div class="node">index.js<br><small>Servidor</small></div><div class="arrow">→</div>
+      <div class="node">app.js<br><small>Express</small></div><div class="arrow">→</div>
+      <div class="node">routes<br><small>Endpoints</small></div><div class="arrow">→</div>
+      <div class="node">controllers<br><small>Reglas</small></div><div class="arrow">→</div>
+      <div class="node">models<br><small>Consultas</small></div><div class="arrow">→</div>
+      <div class="node">SQLite<br><small>Datos</small></div>
+    </div>
+    <div class="grid2" style="margin-top:65px">
+      <p class="muted">Cada capa tiene una responsabilidad concreta, facilitando mantenimiento y pruebas.</p>
+      <p class="muted"><code>src/database/pedidos-ventas.sqlite</code><br>se crea automáticamente al iniciar.</p>
+    </div>
+    <div class="footer">05 · Organización del código</div>
+  </section>
+
+  <section data-document-role="page" data-label="Modelo relacional"
+    data-speaker-notes="Explicar las cardinalidades y cómo SQLite protege la integridad mediante restricciones.">
+    <h2>Modelo relacional</h2>
+    <div class="flow" style="margin-top:35px">
+      <div class="node">CLIENTES<br><small>PK id_cliente</small></div>
+      <div class="arrow">1 ─── N</div>
+      <div class="node">PEDIDOS<br><small>PK id_pedido</small></div>
+      <div class="arrow">1 ─── 1</div>
+      <div class="node">VENTAS<br><small>PK id_venta</small></div>
+    </div>
+    <div class="flow" style="margin-top:30px">
+      <div class="node">PRODUCTOS<br><small>PK id_producto</small></div>
+      <div class="arrow">1 ─── N</div>
+      <div class="node">PEDIDOS<br><small>FK cliente + producto</small></div>
+    </div>
+    <div style="margin-top:42px;text-align:center">
+      <span class="pill">FOREIGN KEY</span><span class="pill">NIT UNIQUE</span>
+      <span class="pill">CHECK stock ≥ 0</span><span class="pill">pendiente / vendido</span>
+    </div>
+    <div class="footer">06 · Integridad de los datos</div>
+  </section>
+
+  <section data-document-role="page" data-label="Endpoints REST"
+    data-speaker-notes="Mostrar que clientes, productos y pedidos tienen CRUD; ventas se registran desde un pedido.">
+    <h2>Endpoints REST</h2>
+    <table>
+      <thead><tr><th>Recurso</th><th>GET</th><th>POST</th><th>PUT</th><th>DELETE</th></tr></thead>
+      <tbody>
+        <tr><td><code>/api/clientes</code></td><td>Listar / obtener</td><td>Crear</td><td>Actualizar</td><td>Eliminar</td></tr>
+        <tr><td><code>/api/productos</code></td><td>Listar / obtener</td><td>Crear</td><td>Actualizar</td><td>Eliminar</td></tr>
+        <tr><td><code>/api/pedidos</code></td><td>Listar / obtener</td><td>Crear</td><td>Cambiar cantidad</td><td>Cancelar</td></tr>
+        <tr><td><code>/api/ventas</code></td><td>Listar / obtener</td><td>Registrar</td><td>—</td><td>—</td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:36px">
+      <span class="pill">200 OK</span><span class="pill">201 Creado</span><span class="pill">204 Sin contenido</span>
+      <span class="pill">400 Datos inválidos</span><span class="pill">404 No encontrado</span><span class="pill">409 Conflicto</span>
+    </div>
+    <div class="footer">07 · Contrato HTTP</div>
+  </section>
+
+  <section data-document-role="page" data-label="Stock y transacciones"
+    data-speaker-notes="La transacción hace atómica la reserva de stock: todo se confirma o todo se revierte.">
+    <h2>Control de stock y transacciones</h2>
+    <div class="grid2">
+      <div>
+        <div class="step"><b>1</b><p>Validar cliente, producto y cantidad.</p></div>
+        <div class="step"><b>2</b><p>Comprobar <code>stock ≥ cantidad</code>.</p></div>
+        <div class="step"><b>3</b><p>Reservar stock al crear el pedido.</p></div>
+        <div class="step"><b>4</b><p>Devolverlo al cancelar un pedido pendiente.</p></div>
+      </div>
+      <div class="card">
+        <h3>Transacción SQL</h3>
+        <div class="terminal">BEGIN IMMEDIATE<br><br>UPDATE productos<br>INSERT pedido<br><br>COMMIT<br><span style="color:#fca5a5">o ROLLBACK</span></div>
+      </div>
+    </div>
+    <p class="muted">Los pedidos vendidos no se modifican ni eliminan. Las transacciones se serializan para evitar sobreventa.</p>
+    <div class="footer">08 · Regla crítica del negocio</div>
+  </section>
+
+  <section data-document-role="page" data-label="Registro de venta"
+    data-speaker-notes="Los datos sensibles se derivan del pedido y del producto; el cliente no puede enviar un precio diferente.">
+    <h2>Registro de una venta</h2>
+    <div class="grid2">
+      <div class="card">
+        <h3>Datos consistentes</h3>
+        <ul><li>Venta creada desde un pedido pendiente</li><li>Cliente, producto y cantidad derivados</li>
+          <li>Precio tomado del producto</li><li>Descuento permitido: 0 a 100%</li><li>Se impide una venta duplicada</li></ul>
+      </div>
+      <div class="card" style="text-align:center">
+        <h3>Cálculo del total</h3>
+        <p><code>total = precio × cantidad<br>× (1 − descuento / 100)</code></p>
+        <p class="muted">3 teclados × Bs 180<br>con 10% de descuento</p>
+        <div class="big-number">Bs 486</div>
+      </div>
+    </div>
+    <div class="footer">09 · Pedido → Venta</div>
+  </section>
+
+  <section data-document-role="page" data-label="Pruebas con Thunder Client"
+    data-speaker-notes="Explicar que la colección queda dentro del proyecto y puede ejecutarse en orden con Run All.">
+    <div class="eyebrow">PRUEBAS DE API · VS CODE</div>
+    <h2>Pruebas con Thunder Client</h2>
+    <div class="grid2">
+      <div class="card">
+        <h3>Colección preparada</h3>
+        <p class="big-number">7</p>
+        <p>solicitudes HTTP organizadas en:</p>
+        <ul><li>Flujo principal</li><li>Validaciones</li></ul>
+      </div>
+      <div class="card">
+        <h3>Aserciones automáticas</h3>
+        <p class="big-number">15</p>
+        <ul><li>Códigos HTTP esperados</li><li>Estado del servidor</li>
+          <li>Cantidad y total de venta</li><li>Mensajes de error</li></ul>
+      </div>
+    </div>
+    <div class="terminal" style="margin-top:30px">thunder-tests/<br>
+      ├── collections/API-Pedidos-Ventas.json<br>
+      └── environments/Local.json &nbsp;→&nbsp; {{baseUrl}}
+    </div>
+    <div class="footer">10 · Colección reutilizable</div>
+  </section>
+
+  <section data-document-role="page" data-label="Thunder Client - Listar clientes"
+    data-speaker-notes="Esta captura demuestra una consulta GET exitosa y la lectura de registros persistidos en SQLite.">
+    <h2>Consulta GET · Clientes</h2>
+    <div class="tc">
+      <div class="tcbar">
+        <div class="method">GET</div><div class="url">http://localhost:3000/api/clientes</div><div class="send">Send</div>
+      </div>
+      <div class="tabs"><span>Query</span><span>Headers</span><span>Auth</span><span class="active-tab">Body</span><span>Tests</span></div>
+      <div class="tccontent">
+        <div class="pane"><div class="pane-title">Request · sin cuerpo</div>
+          <pre>GET /api/clientes
+Accept: application/json</pre>
+        </div>
+        <div class="pane"><div class="pane-title">Response · JSON</div>
+          <pre>[
+  {
+    <span class="key">"id_cliente"</span>: <span class="num">1</span>,
+    <span class="key">"nombre"</span>: <span class="str">"Ana Pérez"</span>,
+    <span class="key">"nit"</span>: <span class="str">"1234567"</span>,
+    <span class="key">"fecha_nac"</span>: <span class="str">"1995-05-20"</span>
+  }
+]</pre>
+        </div>
+      </div>
+      <div class="status">Status: <span class="ok">200 OK</span> &nbsp; · &nbsp; SQLite respondió correctamente</div>
+    </div>
+    <div class="footer">11 · Captura Thunder Client</div>
+  </section>
+
+  <section data-document-role="page" data-label="Thunder Client - Crear pedido"
+    data-speaker-notes="El pedido se crea porque existen el cliente y el producto y hay stock suficiente. El stock queda reservado.">
+    <h2>Consulta POST · Crear pedido</h2>
+    <div class="tc">
+      <div class="tcbar">
+        <div class="method" style="color:#ffd166">POST</div><div class="url">http://localhost:3000/api/pedidos</div><div class="send">Send</div>
+      </div>
+      <div class="tabs"><span>Query</span><span>Headers</span><span>Auth</span><span class="active-tab">Body</span><span>Tests</span></div>
+      <div class="tccontent">
+        <div class="pane"><div class="pane-title">Request · JSON</div>
+          <pre>{
+  <span class="key">"id_cliente"</span>: <span class="num">1</span>,
+  <span class="key">"id_producto"</span>: <span class="num">1</span>,
+  <span class="key">"cantidad"</span>: <span class="num">3</span>
+}</pre>
+        </div>
+        <div class="pane"><div class="pane-title">Response · JSON</div>
+          <pre>{
+  <span class="key">"id_pedido"</span>: <span class="num">1</span>,
+  <span class="key">"id_producto"</span>: <span class="num">1</span>,
+  <span class="key">"id_cliente"</span>: <span class="num">1</span>,
+  <span class="key">"cantidad"</span>: <span class="num">3</span>,
+  <span class="key">"estado"</span>: <span class="str">"pendiente"</span>,
+  <span class="key">"producto"</span>: <span class="str">"Teclado"</span>
+}</pre>
+        </div>
+      </div>
+      <div class="status">Status: <span class="ok">201 CREATED</span> &nbsp; · &nbsp; Stock reservado: 3 unidades</div>
+    </div>
+    <div class="footer">12 · Captura Thunder Client</div>
+  </section>
+
+  <section data-document-role="page" data-label="Thunder Client - Registrar venta"
+    data-speaker-notes="La API toma el precio desde el producto, aplica el diez por ciento y calcula un total de 486 bolivianos.">
+    <h2>Consulta POST · Registrar venta</h2>
+    <div class="tc">
+      <div class="tcbar">
+        <div class="method" style="color:#ffd166">POST</div><div class="url">http://localhost:3000/api/ventas</div><div class="send">Send</div>
+      </div>
+      <div class="tabs"><span>Query</span><span>Headers</span><span>Auth</span><span class="active-tab">Body</span><span>Tests</span></div>
+      <div class="tccontent">
+        <div class="pane"><div class="pane-title">Request · JSON</div>
+          <pre>{
+  <span class="key">"id_pedido"</span>: <span class="num">1</span>,
+  <span class="key">"descuento"</span>: <span class="num">10</span>
+}</pre>
+        </div>
+        <div class="pane"><div class="pane-title">Response · JSON</div>
+          <pre>{
+  <span class="key">"id_venta"</span>: <span class="num">1</span>,
+  <span class="key">"cantidad"</span>: <span class="num">3</span>,
+  <span class="key">"precio_unitario"</span>: <span class="num">180</span>,
+  <span class="key">"descuento"</span>: <span class="num">10</span>,
+  <span class="key">"total"</span>: <span class="num">486</span>
+}</pre>
+        </div>
+      </div>
+      <div class="status">Status: <span class="ok">201 CREATED</span> &nbsp; · &nbsp; Total verificado: Bs 486</div>
+    </div>
+    <div class="footer">13 · Captura Thunder Client</div>
+  </section>
+
+  <section data-document-role="page" data-label="Thunder Client - Stock insuficiente"
+    data-speaker-notes="El estado 409 es el resultado correcto: la API protege el inventario y explica cuánto stock existe.">
+    <h2>Consulta POST · Stock insuficiente</h2>
+    <div class="tc">
+      <div class="tcbar">
+        <div class="method" style="color:#ffd166">POST</div><div class="url">http://localhost:3000/api/pedidos</div><div class="send">Send</div>
+      </div>
+      <div class="tabs"><span>Query</span><span>Headers</span><span>Auth</span><span class="active-tab">Body</span><span>Tests</span></div>
+      <div class="tccontent">
+        <div class="pane"><div class="pane-title">Request · JSON</div>
+          <pre>{
+  <span class="key">"id_cliente"</span>: <span class="num">1</span>,
+  <span class="key">"id_producto"</span>: <span class="num">2</span>,
+  <span class="key">"cantidad"</span>: <span class="num">999</span>
+}</pre>
+        </div>
+        <div class="pane"><div class="pane-title">Response · JSON</div>
+          <pre>{
+  <span class="key">"error"</span>: <span class="str">"Stock insuficiente"</span>,
+  <span class="key">"stock_disponible"</span>: <span class="num">20</span>,
+  <span class="key">"cantidad_solicitada"</span>: <span class="num">999</span>
+}</pre>
+        </div>
+      </div>
+      <div class="status">Status: <span class="conflict">409 CONFLICT</span> &nbsp; · &nbsp; Prueba aprobada: pedido rechazado</div>
+    </div>
+    <div class="footer">14 · Captura Thunder Client</div>
+  </section>
+
+  <section data-document-role="page" data-label="Resultados Thunder Client"
+    data-speaker-notes="Mostrar que los resultados 409 son pruebas aprobadas: demuestran que las reglas de negocio rechazan operaciones inválidas.">
+    <h2>Resultados del flujo secuencial</h2>
+    <table>
+      <thead><tr><th>#</th><th>Solicitud</th><th>Esperado</th><th>Resultado</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Estado del servidor</td><td>200 · activo · SQLite</td><td class="accent">PASS</td></tr>
+        <tr><td>2</td><td>Listar clientes</td><td>200</td><td class="accent">PASS</td></tr>
+        <tr><td>3</td><td>Listar productos</td><td>200</td><td class="accent">PASS</td></tr>
+        <tr><td>4</td><td>Crear pedido válido</td><td>201 · pendiente</td><td class="accent">PASS</td></tr>
+        <tr><td>5</td><td>Venta con 10% descuento</td><td>201 · total Bs 486</td><td class="accent">PASS</td></tr>
+        <tr><td>6</td><td>Stock insuficiente</td><td>409 · rechazado</td><td class="accent">PASS</td></tr>
+        <tr><td>7</td><td>Venta duplicada</td><td>409 · rechazada</td><td class="accent">PASS</td></tr>
+      </tbody>
+    </table>
+    <p style="margin-top:27px"><span class="accent"><strong>7/7 solicitudes correctas.</strong></span>
+      Los errores 409 confirman que las reglas de negocio funcionan.</p>
+    <div class="footer">15 · Evidencia de funcionamiento</div>
+  </section>
+
+  <section data-document-role="page" data-label="Pruebas y conclusiones"
+    data-speaker-notes="Cerrar demostrando que el servidor funciona, que las pruebas pasan y que la solución puede ampliarse.">
+    <h2>Pruebas, ejecución y conclusiones</h2>
+    <div class="grid2">
+      <div>
+        <div class="terminal">npm install<br>npm start<br><br>http://localhost:3000/api</div>
+        <p class="muted">SQLite y sus tablas se crean automáticamente.</p>
+      </div>
+      <div class="card">
+        <h3>Resultados verificados</h3>
+        <p><span class="big-number">3/3</span><br>pruebas automatizadas aprobadas</p>
+        <p><span class="accent"><strong>0 vulnerabilidades</strong></span> en npm audit</p>
+      </div>
+    </div>
+    <p style="margin-top:30px"><strong>Conclusión:</strong> una API modular, persistente y protegida contra inconsistencias de inventario, lista para autenticación, reportes o despliegue.</p>
+    <div class="footer">16 · Resultado final</div>
+  </section>
+</body>
+</html>

@@ -1,0 +1,19 @@
+{
+  "name": "tarea-3-api-ventas",
+  "version": "1.0.0",
+  "description": "API REST de clientes, productos, pedidos y ventas con Node.js, Express y SQLite",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "seed": "node scripts/seed.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}

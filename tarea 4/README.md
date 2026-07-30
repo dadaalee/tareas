@@ -22,6 +22,20 @@ Para ejecutar las pruebas:
 npm test
 ```
 
+## Pruebas con Thunder Client
+
+La colección está en
+`thunder-tests/collections/API-Pedidos-Ventas.json` y el ambiente local en
+`thunder-tests/environments/Local.json`.
+
+1. Inicia la API con `npm start`.
+2. En Thunder Client abre **Collections → Import** e importa la colección.
+3. En **Env → Import** importa `Local.json` y actívalo.
+4. Ejecuta las solicitudes en orden o utiliza **Run All** en modo secuencial.
+
+La colección verifica el estado del servidor, listados, creación de pedido,
+venta con descuento, stock insuficiente y venta duplicada.
+
 ## Endpoints
 
 | Método | Ruta | Descripción |

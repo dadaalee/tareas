@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block titulo %}Inicio{% endblock %}
+
+{% block contenido %}
+    <h1>Gestor de Tareas</h1>
+    <p>¡Bienvenido al panel de control, Super Agente Cobra!</p>
+
+    <h3>Lista de Pendientes:</h3>
+    <ul>
+        {% for tarea in tareas %}
+            <li>{{ tarea.titulo }}</li>
+        {% else %}
+            <li>¡Felicidades! No tienes tareas pendientes.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}
